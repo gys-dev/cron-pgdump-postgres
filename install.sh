@@ -1,7 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 
-# exit if a command fails
+# Exit if a command fails
 set -e
 
-# install pg_dump
-apk --no-cache add postgresql
+# Install curl
+apk --no-cache add curl
+
+# Install nfs
+apk --no-cache add nfs-utils
+
+# Install go-cron
+curl -L --insecure https://github.com/odise/go-cron/releases/download/v0.0.7/go-cron-linux.gz | zcat > /usr/local/bin/go-cron
+chmod u+x /usr/local/bin/go-cron

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 set -o pipefail
@@ -29,5 +29,18 @@ export PGPASSWORD=$POSTGRES_PASSWORD
 POSTGRES_HOST_OPTS="-h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER"
 
 # Dump the database
-echo "Creating dump of database ${POSTGRES_DATABASE} from host ${POSTGRES_HOST}..."
-pg_dump $POSTGRES_HOST_OPTS $POSTGRES_EXTRA_OPTS ${POSTGRES_DATABASE} --file=$BACKUP_FILE
+
+databases=$(echo $POSTGRES_DATABASE | tr "," "\n")
+
+for db in $databases
+do
+    echo "Creating dump of database ${db} from host ${POSTGRES_HOST}"
+    BACKUP_FILE_NAME="$db"_$(date +"%Y-%m-%dT%H_%M_%SZ")
+    BACKUP_FILE=$BACKUP_DIR/$BACKUP_FILE_NAME
+
+    pg_dump $POSTGRES_HOST_OPTS $POSTGRES_EXTRA_OPTS ${db} --file=$BACKUP_FILE
+
+    echo "Dump and transfer completed, filename: $BACKUP_FILE_NAME"
+
+done
+
